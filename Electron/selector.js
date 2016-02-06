@@ -78,19 +78,30 @@ window.onload = function () {
             point_1 = get_mouse_pos(e, can_rect);
             point_2 = point_1;
 
-            $("#selection-dialog").show();
-            $("#selection-prompt").hide();
-
             state++;
         } else if (state == states.SELECT) {
             s_points = get_coords(tex,point_1,point_2);
 
+            // Display Select Prompt
             $("#selection-dialog").hide();
             $("#selection-prompt").show();
 
             state++;
         } else if (state == states.VIEW) {
-            console.log(get_coords(tex,point_1, point_2));
+        }
+    });
+
+    // OK Button click
+    // TODO: Button Should Switch To Next Item
+    $("#btn-yes").on("click", function () {
+    });
+
+    // NO Button click
+    $("#btn-no").on("click", function () {
+        if (state == states.VIEW) {
+            // Display Instruction Div
+            $("#selection-dialog").show();
+            $("#selection-prompt").hide();
 
             state=0;
         }
