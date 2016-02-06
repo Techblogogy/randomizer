@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Selector</title>
+
+        <script>
+            window.nodeRequire = require;
+            delete window.require;
+            delete window.exports;
+            delete window.module;
+        </script>
+
+        <!-- Main Stylesheet -->
+        <link rel="stylesheet" href="style.css" />
+
+        <!-- Bootstrap Stylesheet -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    </head>
+
+    <body>
+
+        <div class="main-area">
+            <div id="selector"></div>
+            <div id="controls">
+                <!-- Title Area -->
+                <h2 id="nO_txt">Select #2.1.2</h2>
+                <hr />
+
+                <!-- Actions Area -->
+                <div id="action-box">
+                    <div id="selection-dialog">
+                        <p>Please select a task #2.1.2</p>
+                    </div>
+
+                    <div style="display: none" id="selection-prompt">
+                        <p>Do you want to use current selection?</p>
+                        <button type="button" class="btn btn-success" id="btn-yes"><span class="glyphicon glyphicon-ok"></span> Yes</button>
+                        <button type="button" class="btn btn-danger" id="btn-no"><span class="glyphicon glyphicon-remove"></span> No</button>
+                    </div>
+                </div>
+                <hr />
+
+                <!-- Help Area -->
+                <div id="help-box">
+                    <h5><span class="glyphicon glyphicon-question-sign"></span> Help</h5>
+                    <p>Use <kbd>Left Mouse</kbd> to select</p>
+                    <p>Use <kbd>Right Mouse</kbd> to move <kbd><span class="glyphicon glyphicon-move"></span></kbd></p>
+                    <p>Use <kbd>Scroll Wheel</kbd> to zoom <kbd><span class="glyphicon glyphicon-search"></span></kbd></p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Canvas Image Selector -->
+        <script src="selector.js"></script>
+        <!-- Boostrap Javascript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    </body>
+</html>

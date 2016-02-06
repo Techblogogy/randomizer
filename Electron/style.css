@@ -1,0 +1,34 @@
+html,body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-area {
+    
+}
+
+.main-area {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#selector {
+    display: block;
+    float: left;
+
+    width: 70%;
+    height: 99.4%;
+}
+#selector canvas {
+    border-right: 1px solid #bebebe;
+}
+#controls {
+    display: block;
+    float: left;
+
+    width: 30%;
+
+    padding: 10px;
+}
