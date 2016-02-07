@@ -17,9 +17,22 @@ window.onload = function () {
         can.height = $("#selector").innerHeight();
     });
 
+    var image_list = [
+        {
+            num: "1.2.1",
+            src: "img/12.png"
+        },
+        {
+            num: "3.2.1",
+            src: "img/24.png"
+        }
+    ];
+    var selections = [];
+    var cur_img_id = 0;
+
     var tex; // Main Page
     var img = new Image(); // Page Image
-    img.src = "img/12.png"; // Page Image
+    img.src = image_list[cur_img_id].src; // Page Image
     img.onload = function () {
         // Sets Image Scale
         var s = can.height/img.height;
@@ -105,9 +118,18 @@ window.onload = function () {
     });
 
     // OK Button click
-    // TODO: Button Should Switch To Next Item
     $("#btn-yes").on("click", function () {
+        state = 0;
+        $("#selection-dialog").show();
+        $("#selection-prompt").hide();
 
+        cur_img_id++;
+        img.src = image_list[cur_img_id].src; // Page Image
+
+        // New Image Load Event
+        img.onload = function () {
+            tex.reset(can.height/img.height);
+        }
     });
 
     // NO Button click
@@ -221,3 +243,10 @@ Page.prototype.p_render = function (ctx, p1, p2) {
         this.img, p1.x,p1.y,p2.x-p1.x,p2.y-p1.y,
         0,0,(p2.x-p1.x)*this.scale,(p2.y-p1.y)*this.scale);
 };
+
+Page.prototype.reset = function (s) {
+    this.x = 0;
+    this.y = 0;
+
+    this.set_scale(s);
+}
