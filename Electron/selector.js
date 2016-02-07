@@ -198,13 +198,21 @@ function get_mouse_pos (e, can) {
 
 // Returns Coordinates Relative To Scale
 function get_coords (obj, point_1, point_2) {
+    // Get MIN/MAX X Point
+    var min_x = Math.min(point_1.x,point_2.x);
+    var max_x = Math.max(point_1.x,point_2.x);
+
+    // Get MIN/MAX Y Point
+    var min_y = Math.min(point_1.y,point_2.y);
+    var max_y = Math.max(point_1.y,point_2.y);
+
     var p_1 = {
-        x: ((point_1.x-obj.x)/obj.scale),
-        y: ((point_1.y-obj.y)/obj.scale)
+        x: ((min_x-obj.x)/obj.scale),
+        y: ((min_y-obj.y)/obj.scale)
     };
     var p_2 = {
-        x: ((point_2.x-obj.x)/obj.scale),
-        y: ((point_2.y-obj.y)/obj.scale)
+        x: ((max_x-obj.x)/obj.scale),
+        y: ((max_y-obj.y)/obj.scale)
     };
 
     return [p_1, p_2];
