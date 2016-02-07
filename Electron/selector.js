@@ -1,41 +1,52 @@
 window.onload = function () {
-    var can_holder = $("#selector");
+    var can_holder = $("#selector"); // Canvas DIV
+
+    // Add Canvas Element
     $(can_holder).append("<canvas id=\"selector_can\"></canvas>");
 
+    // Canvas Initialization
     var can = document.getElementById("selector_can");
         can.width = $("#selector").innerWidth();
         can.height = $("#selector").innerHeight();
     var can_rect = can.getBoundingClientRect();
     var ctx = can.getContext("2d");
 
+    // Window Resize Event
     $(window).resize(function () {
         can.width = $("#selector").innerWidth();
         can.height = $("#selector").innerHeight();
     });
 
-    var tex;
-    var img = new Image();
-    img.src = "img/12.png";
+    var tex; // Main Page
+    var img = new Image(); // Page Image
+    img.src = "img/12.png"; // Page Image
     img.onload = function () {
+        // Sets Image Scale
         var s = can.height/img.height;
         tex = new Page(this, 0,0, s);
+
+        // Main Render Loop Entry Point
         render_loop();
     }
 
+    // Selection States ENUM
     var states = {
         NONE: 0,
         SELECT: 1,
         VIEW: 2
     };
+    // Current State
     var state = states.NONE;
     function next_state(st) {
         st++;
         if (st>=states.length) st=0;
     }
 
-    var point_2 = {x: 0, y:0}
-    var m_point; // Move Point
-    var moving = false;
+    var point_1; // Selection Point 1
+    var point_2 = {x: 0, y:0} // Selection Point 2
+
+    var m_point; // Previous Mouse Position
+    var moving = false; // Right Mouse Hold Boolean
     $("#selector_can").mousemove(function (e) {
         if (state == states.SELECT) {
             point_2 = get_mouse_pos(e, can_rect);
@@ -55,10 +66,13 @@ window.onload = function () {
         }
     });
 
-    // Right click (Move Page)
+    /* (Move Page) */
+    // Disable Context Menu
     $("#selector_can").on("contextmenu", function () {
         return false;
     });
+
+    // Right Mouse Click
     $("#selector_can").mousedown(function (e) {
         if (e.which === 3) {
             e.preventDefault();
@@ -71,7 +85,6 @@ window.onload = function () {
     });
 
     // Left click (Select)
-    var point_1;
     var s_points;
     $("#selector_can").click(function (e) {
         if (state == states.NONE) {
@@ -94,6 +107,7 @@ window.onload = function () {
     // OK Button click
     // TODO: Button Should Switch To Next Item
     $("#btn-yes").on("click", function () {
+
     });
 
     // NO Button click
@@ -152,6 +166,7 @@ window.onload = function () {
     }
 }
 
+// Returns Mouse Position From Event
 function get_mouse_pos (e, can) {
     return {
         x: e.pageX - can.left,
@@ -159,6 +174,7 @@ function get_mouse_pos (e, can) {
     }
 }
 
+// Returns Coordinates Relative To Scale
 function get_coords (obj, point_1, point_2) {
     var p_1 = {
         x: ((point_1.x-obj.x)/obj.scale),
@@ -172,6 +188,7 @@ function get_coords (obj, point_1, point_2) {
     return [p_1, p_2];
 }
 
+/* Page Class */
 var Page = function (img, x, y, scale) {
     this.img = img;
 
