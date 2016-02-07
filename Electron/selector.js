@@ -119,11 +119,20 @@ window.onload = function () {
 
     // OK Button click
     $("#btn-yes").on("click", function () {
+        selections.push(s_points);
+        console.log(selections);
+
+        cur_img_id++;
+        if (cur_img_id >= image_list.length) {
+            console.log("THE END");
+            return;
+        }
+
+        // Reset Style And Menus
         state = 0;
         $("#selection-dialog").show();
         $("#selection-prompt").hide();
 
-        cur_img_id++;
         img.src = image_list[cur_img_id].src; // Page Image
 
         // New Image Load Event
