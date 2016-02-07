@@ -5,7 +5,7 @@ html,body {
 }
 
 .nav-area {
-    
+
 }
 
 .main-area {
@@ -31,4 +31,10 @@ html,body {
     width: 30%;
 
     padding: 10px;
+}
+
+.dialog {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
 }
