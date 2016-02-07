@@ -32,6 +32,8 @@ window.onload = function () {
 
     var tex; // Main Page
     var img = new Image(); // Page Image
+
+    $(".num-field").text(image_list[cur_img_id].num);
     img.src = image_list[cur_img_id].src; // Page Image
     img.onload = function () {
         // Sets Image Scale
@@ -133,6 +135,7 @@ window.onload = function () {
         $("#selection-dialog").show();
         $("#selection-prompt").hide();
 
+        $(".num-field").text(image_list[cur_img_id].num);
         img.src = image_list[cur_img_id].src; // Page Image
 
         // New Image Load Event
