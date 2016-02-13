@@ -1,4 +1,51 @@
+var fs = window.nodeRequire("fs");
+
+var task_list = [];
+
+var max_uin = 1; // Maximum Subject
+var max_maj = 2; // Maximum Variant
+var max_min = 5; //37; // Maximum Task
+
+// Returns random in [min, max] (edges included)
+function get_random(min, max) {
+    return Math.floor(Math.random() * (max+1 - min)) + min;
+}
+
+// Returns An Array Of Random Tasks
+function get_items () {
+    task_list = JSON.parse(fs.readFileSync("Electron/img/pack1/db.json"));
+
+    // var rnd_tsk = [
+    //     get_random(1,max_uin),
+    //     get_random(1,max_maj),
+    //     get_random(1,max_min)
+    // ];
+
+    var rnd_tsk = [];
+    for (var i=1; i<=max_min; i++) {
+        // rnd_tsk.append([
+        //     get_random(1,max_uin),
+        //     get_random(1,max_maj),
+        //     i
+        // ]);
+
+        var uin = get_random(1,max_uin);
+        var maj = get_random(1,max_maj);
+
+        console.log($.grep(task_list, function (e) {
+            return (e.num[0] == uin && e.num[1] == maj && e.num[2] == i);
+        }));
+    }
+
+    // var rst = $.grep(task_list, function (e) {
+    //     return e.num[0] == rnd_tsk[0] && e.num[1] == rnd_tsk[1] && e.num[2] == rnd_tsk[2];
+    // });
+    // console.log(rst);
+}
+
 window.onload = function () {
+    get_items();
+
     var can_holder = $("#selector"); // Canvas DIV
 
     // Add Canvas Element

@@ -78,7 +78,7 @@ function rnd_add_item() {
             tasks.push(
                 {
                     num: [min_itm[0],min_itm[1],min_itm[2]],
-                    img: [img_list[cur_img_id]]
+                    img: img_list[cur_img_id]
                 }
             );
         }
