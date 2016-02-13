@@ -1,12 +1,32 @@
 var fs = window.nodeRequire("fs");
 
+var tasks = []; // Task List DB
+
+var path_prefix = "../img/pack1/";
+var img_list = []; //["../img/12.png","../img/24.png"]
+var cur_img_id = 0;
+
+var max_maj = 2;
+var max_min = 37;
+
 window.onload = function () {
-    fs.readdir('Electron/img/pack1/.', function (err, data) {
-        if (err) {
-            return console.error(err);
-        }
-        console.log(data.toString());
+    // Returns All Images In Directory
+    img_list = fs.readdirSync('Electron/img/pack1/.')
+    // , function (err, data) {
+    //     if (err) {
+    //         return console.error(err);
+    //     }
+    //     img_list = data.sort(function (a,b) {
+    //         return parseInt(a.slice(0,-4))-parseInt(b.slice(0,-4));
+    //     });
+    //
+    //     console.log();
+    // });
+    img_list = img_list.sort(function (a,b) {
+        return parseInt(a.slice(0,-4))-parseInt(b.slice(0,-4));
     });
+    $("#task_img").attr("src", path_prefix+img_list[cur_img_id]);
+
     $("#itm-smb").on('click', function () {
         rnd_add_item();
     });
@@ -23,12 +43,6 @@ window.onload = function () {
     });
 }
 
-var tasks = [];
-var img_list = ["../img/12.png","../img/24.png"]
-var cur_img_id = 0;
-
-var max_maj = 2;
-var max_min = 37;
 
 function rnd_add_item() {
     var itm_txt = $("#itm-no").val(); // Item Text Input
@@ -51,7 +65,11 @@ function rnd_add_item() {
 
         // Generate Range
         var min_itm = range_max[0];
-        range.push([min_itm[0],min_itm[1],min_itm[2]]);
+        // range.push([min_itm[0],min_itm[1],min_itm[2]]);
+        tasks.push({
+            num: [min_itm[0],min_itm[1],min_itm[2]],
+            img: [img_list[cur_img_id]]
+        });
 
         // Count Items By Max, Major, Minor
         while (min_itm[0] != range_max[1][0] || min_itm[1] != range_max[1][1] || min_itm[2] != range_max[1][2]) {
@@ -82,9 +100,12 @@ function rnd_add_item() {
 
     // Next Image
     $("#itm-smb").attr("disabled",true);
-    $("#itm-no").val("");
+    $("#itm-no").val(min_itm[0]+"."+min_itm[1]+"."+(min_itm[2]+1)+"-"+min_itm[0]+"."+min_itm[1]+".");
     cur_img_id++;
-    $("#task_img").attr("src", img_list[cur_img_id]);
+    if (cur_img_id >= img_list.length) {
+        //TODO: Write DB File
+    }
+    $("#task_img").attr("src", path_prefix+img_list[cur_img_id]);
 
     return range;
 }
