@@ -24,6 +24,17 @@ html,body {
 #selector canvas {
     border-right: 1px solid #bebebe;
 }
+#selector img {
+    display: block;
+
+    height: 100%;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    border-left: 1px solid #bebebe;
+    border-right: 1px solid #bebebe;
+}
 #controls {
     display: block;
     float: left;

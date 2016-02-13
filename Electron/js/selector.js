@@ -20,11 +20,11 @@ window.onload = function () {
     var image_list = [
         {
             num: "1.2.1",
-            src: "img/12.png"
+            src: "../img/12.png"
         },
         {
             num: "3.2.1",
-            src: "img/24.png"
+            src: "../img/24.png"
         }
     ];
     var selections = [];
