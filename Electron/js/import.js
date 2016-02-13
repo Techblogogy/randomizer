@@ -2,7 +2,7 @@ var fs = window.nodeRequire("fs");
 
 var tasks = []; // Task List DB
 
-var path_prefix = "../img/pack1/";
+var path_prefix = "../img/pack1/pages/";
 var img_list = []; //["../img/12.png","../img/24.png"]
 var cur_img_id = 0;
 
@@ -11,17 +11,7 @@ var max_min = 37;
 
 window.onload = function () {
     // Returns All Images In Directory
-    img_list = fs.readdirSync('Electron/img/pack1/.')
-    // , function (err, data) {
-    //     if (err) {
-    //         return console.error(err);
-    //     }
-    //     img_list = data.sort(function (a,b) {
-    //         return parseInt(a.slice(0,-4))-parseInt(b.slice(0,-4));
-    //     });
-    //
-    //     console.log();
-    // });
+    img_list = fs.readdirSync('Electron/img/pack1/pages/.')
     img_list = img_list.sort(function (a,b) {
         return parseInt(a.slice(0,-4))-parseInt(b.slice(0,-4));
     });
@@ -103,7 +93,11 @@ function rnd_add_item() {
     $("#itm-no").val(min_itm[0]+"."+min_itm[1]+"."+(min_itm[2]+1)+"-"+min_itm[0]+"."+min_itm[1]+".");
     cur_img_id++;
     if (cur_img_id >= img_list.length) {
-        //TODO: Write DB File
+        $("#itm-no").attr("disabled",true);
+        $("#itm-no").val("");
+
+        fs.writeFileSync("Electron/img/pack1/info.json", JSON.stringify(tasks));
+        return;
     }
     $("#task_img").attr("src", path_prefix+img_list[cur_img_id]);
 
