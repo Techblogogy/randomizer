@@ -35,8 +35,27 @@ function get_items () {
     console.log(imgs_list);
 }
 
+// Generates A PDF
+function gen_PDF() {
+    var phan = window.nodeRequire('phantom');
+    var page = phan.create()
+    .then(function (ph) {
+        ph.createPage().then(function (page) {
+            page.property('paperSize', {width: "210mm", height: "297mm"}).then(function () {
+                page.property('viewportSize', {width: 2480, height: 3508}).then(function () {
+                    page.open('test.html').then(function () {
+                        page.render('file.pdf');
+                    });
+                })
+            });
+        });
+    });
+}
+
 window.onload = function () {
     get_items();
+
+    gen_PDF();
 
     var can_holder = $("#selector"); // Canvas DIV
 
