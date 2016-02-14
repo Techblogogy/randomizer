@@ -3,6 +3,7 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://www.quasimondo.com/StackBlurForCanvas/StackBlur.js"></script>
 
     <style>
         html, body {
@@ -18,11 +19,13 @@
 <script>
     var id = 0;
 
-    var lastY = 0;
-    var lastX = 0;
-
     var pageH = 2480;
     var pageW = 3508;
+
+    var offset = 50;
+
+    var lastY = offset;
+    var lastX = offset;
 
     var cnv;
     var ctx;
@@ -33,26 +36,41 @@
             cnv.height = pageH; //window.innerHeight;
         ctx = cnv.getContext("2d");
 
-        // ctx.fillStyle = "#000000";
-        // ctx.fillRect(0,0,cnv.width,cnv.height);
-
-        // var im = new Image();
-        // im.src = "Electron/img/pack1/pages/"+images[id].image;
-        // im.onload = load_render;
-
         for (id=0; id<images.length; id++) {
-            var w = cnv.width/2;
+            var w = cnv.width/2 - offset;
             var h = (images[id].point[1].y-images[id].point[0].y) * w / (images[id].point[1].x-images[id].point[0].x);
 
+            // Paper Economy
+            if (h >= 140 && h < 200) {
+                h = 140;
+            } else if (h > 200 && h < 300) {
+                h = h*0.9;
+            } else if (h > 300 && h < 400) {
+                h = h*0.8;
+            } else if (h > 400 && h <= 500) {
+                h = h*0.65;
+            } else if (h > 500) {
+                h = h*0.75;
+            }
+
             // Switch Column
-            if ((lastY+h) > can.height) {
-                lastY = 0;
-                lastX += cnv.width/2;
+            if ((lastY+h+offset) > cnv.height) {
+                lastY = offset;
+                lastX += cnv.width/2-offset;
             }
 
             // Switch Page
-            if (lastX > cnv.width) {
-                
+            if (lastX+offset >= cnv.width) {
+                cnv = document.createElement("canvas");
+                    cnv.width = pageW;
+                    cnv.height = pageH;
+                ctx = cnv.getContext("2d");
+                cnv.id = "cnv";
+
+                lastY = offset;
+                lastX = offset;
+
+                document.body.appendChild(cnv);
             }
 
             ctx.drawImage(
@@ -64,7 +82,7 @@
             );
             lastY += h;
 
-            console.log(images[id].point[1].y-images[id].point[0].y);
+            console.log((id+1)+" "+h);
             // console.log(h);
 
             // if (lastY > can.height) {
@@ -72,6 +90,8 @@
             //     lastX += cnv.width/2;
             // }
         }
+
+        // stackBlurCanvasRGB( "cnv", 0, 0, cnv.width, cnv.height, 1.0 );
     }
 
 
