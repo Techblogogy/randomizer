@@ -7,7 +7,7 @@ var imgs_list = []; // Randomized Images List
 
 var max_uin = 1; // Maximum Subject
 var max_maj = 2; // Maximum Variant
-var max_min = 13; //37; // Maximum Task
+var max_min = 37; // Maximum Task
 
 // Returns random in [min, max] (edges included)
 function get_random(min, max) {
@@ -37,19 +37,42 @@ function get_items () {
 
 // Generates A PDF
 function gen_PDF() {
-    var phan = window.nodeRequire('phantom');
-    var page = phan.create()
-    .then(function (ph) {
-        ph.createPage().then(function (page) {
-            page.property('paperSize', {width: "210mm", height: "297mm"}).then(function () {
-                page.property('viewportSize', {width: 2480, height: 3508}).then(function () {
-                    page.open('test.html').then(function () {
-                        page.render('file.pdf');
-                    });
-                })
-            });
-        });
-    });
+    // Get HEADER and FOOTER
+    var head = fs.readFileSync("Electron/templates/head.html");
+    var foot = fs.readFileSync("Electron/templates/footer.html");
+
+    // TEMPORARY. Load data file
+    var points = (fs.readFileSync("Electron/img/pack1/task.json"));
+
+    // TODO: Generate Image List
+    var body = "<script>var images = '"+points+"'</script>";
+    points = JSON.parse(points);
+    for (var p in points) {
+        body += "<img src=\"Electron/img/pack1/pages/"+points[p].image+"\" id=\"i_"+p+"\" style=\"display:none; \">";
+    }
+
+    // Save Page
+    fs.writeFileSync("tmp.html", head+body+foot);
+
+    // Render PDF
+    // var phan = window.nodeRequire('phantom');
+    // var page = phan.create()
+    // .then(function (ph) {
+    //     ph.createPage().then(function (page) {
+    //         page.property('paperSize', {format: "A4", orientation: "landscape", border: "5mm"}).then(function () {
+    //             page.property('viewportSize', {height: 595, width: 840}).then(function () {
+    //                 page.open('tmp.html').then(function () {
+    //                     page.render('file.pdf');
+    //
+    //                     // Clean Up
+    //                     // fs.unlinkSync(".tmp.html");
+    //                     page.close();
+    //                     ph.exit();
+    //                 });
+    //             })
+    //         });
+    //     });
+    // });
 }
 
 window.onload = function () {
@@ -182,12 +205,16 @@ window.onload = function () {
 
     // OK Button click
     $("#btn-yes").on("click", function () {
-        selections.push(s_points);
+        selections.push({
+            point: s_points,
+            image: imgs_list[cur_img_id].img
+        });
         console.log(selections);
 
         cur_img_id++;
         if (cur_img_id >= imgs_list.length) {
             console.log("THE END");
+            fs.writeFileSync("Electron/img/pack1/task.json", JSON.stringify(selections));
             return;
         }
 

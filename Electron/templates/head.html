@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        html, body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body> <!-- Body -->
+
+<canvas id="can"></canvas>
+
+<script>
+    var id = 0;
+
+    var lastY = 0;
+    var lastX = 0;
+
+    var pageH = 2480;
+    var pageW = 3508;
+
+    var cnv;
+    var ctx;
+    window.onload = function () {
+        images = JSON.parse(images);
+        cnv = document.getElementById('can');
+            cnv.width = pageW; //window.innerWidth;
+            cnv.height = pageH; //window.innerHeight;
+        ctx = cnv.getContext("2d");
+
+        // ctx.fillStyle = "#000000";
+        // ctx.fillRect(0,0,cnv.width,cnv.height);
+
+        // var im = new Image();
+        // im.src = "Electron/img/pack1/pages/"+images[id].image;
+        // im.onload = load_render;
+
+        for (id=0; id<images.length; id++) {
+            var w = cnv.width/2;
+            var h = (images[id].point[1].y-images[id].point[0].y) * w / (images[id].point[1].x-images[id].point[0].x);
+
+            // Switch Column
+            if ((lastY+h) > can.height) {
+                lastY = 0;
+                lastX += cnv.width/2;
+            }
+
+            // Switch Page
+            if (lastX > cnv.width) {
+                
+            }
+
+            ctx.drawImage(
+                document.getElementById("i_"+id),
+                images[id].point[0].x,images[id].point[0].y,
+                images[id].point[1].x-images[id].point[0].x,
+                images[id].point[1].y-images[id].point[0].y,
+                lastX,lastY,w,h
+            );
+            lastY += h;
+
+            console.log(images[id].point[1].y-images[id].point[0].y);
+            // console.log(h);
+
+            // if (lastY > can.height) {
+            //     lastY = 0;
+            //     lastX += cnv.width/2;
+            // }
+        }
+    }
+
+
+    function load_render() {
+        var w = cnv.width/2;
+        var h = (images[id].point[1].y-images[id].point[0].y) * w / (images[id].point[1].x-images[id].point[0].x);
+        ctx.drawImage(
+            this,
+            images[id].point[0].x,images[id].point[0].y,
+            images[id].point[1].x-images[id].point[0].x,
+            images[id].point[1].y-images[id].point[0].y,
+            0,lastY,w,h
+        );
+
+        lastY += h;
+        id++;
+
+        if (id < images.length) {
+            this.src = "Electron/img/pack1/pages/"+images[id].image;
+            this.onload = load_render;
+        }
+    }
+</script>
