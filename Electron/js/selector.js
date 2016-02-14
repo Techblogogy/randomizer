@@ -1,10 +1,13 @@
 var fs = window.nodeRequire("fs");
 
-var task_list = [];
+var p_fix = "../img/pack1/pages/"
+
+var task_list = []; // All Available Tasks
+var imgs_list = []; // Randomized Images List
 
 var max_uin = 1; // Maximum Subject
 var max_maj = 2; // Maximum Variant
-var max_min = 5; //37; // Maximum Task
+var max_min = 13; //37; // Maximum Task
 
 // Returns random in [min, max] (edges included)
 function get_random(min, max) {
@@ -15,32 +18,21 @@ function get_random(min, max) {
 function get_items () {
     task_list = JSON.parse(fs.readFileSync("Electron/img/pack1/db.json"));
 
-    // var rnd_tsk = [
-    //     get_random(1,max_uin),
-    //     get_random(1,max_maj),
-    //     get_random(1,max_min)
-    // ];
-
     var rnd_tsk = [];
     for (var i=1; i<=max_min; i++) {
-        // rnd_tsk.append([
-        //     get_random(1,max_uin),
-        //     get_random(1,max_maj),
-        //     i
-        // ]);
-
         var uin = get_random(1,max_uin);
         var maj = get_random(1,max_maj);
 
-        console.log($.grep(task_list, function (e) {
+        var im = ($.grep(task_list, function (e) {
             return (e.num[0] == uin && e.num[1] == maj && e.num[2] == i);
         }));
+
+        for (var a in im) {
+            imgs_list.push(im[a]);
+        }
     }
 
-    // var rst = $.grep(task_list, function (e) {
-    //     return e.num[0] == rnd_tsk[0] && e.num[1] == rnd_tsk[1] && e.num[2] == rnd_tsk[2];
-    // });
-    // console.log(rst);
+    console.log(imgs_list);
 }
 
 window.onload = function () {
@@ -64,24 +56,25 @@ window.onload = function () {
         can.height = $("#selector").innerHeight();
     });
 
-    var image_list = [
-        {
-            num: "1.2.1",
-            src: "../img/12.png"
-        },
-        {
-            num: "3.2.1",
-            src: "../img/24.png"
-        }
-    ];
+    // var image_list = [
+    //     {
+    //         num: "1.2.1",
+    //         src: "../img/12.png"
+    //     },
+    //     {
+    //         num: "3.2.1",
+    //         src: "../img/24.png"
+    //     }
+    // ];
     var selections = [];
     var cur_img_id = 0;
 
     var tex; // Main Page
     var img = new Image(); // Page Image
 
-    $(".num-field").text(image_list[cur_img_id].num);
-    img.src = image_list[cur_img_id].src; // Page Image
+    $(".num-field").text(imgs_list[cur_img_id].num[0]+"."+imgs_list[cur_img_id].num[1]+"."+imgs_list[cur_img_id].num[2]);
+    // img.src = image_list[cur_img_id].src; // Page Image
+    img.src = p_fix+imgs_list[cur_img_id].img; // Page Image
     img.onload = function () {
         // Sets Image Scale
         var s = can.height/img.height;
@@ -95,7 +88,9 @@ window.onload = function () {
     var states = {
         NONE: 0,
         SELECT: 1,
-        VIEW: 2
+        VIEW: 2,
+
+        CROP: 3
     };
     // Current State
     var state = states.NONE;
@@ -110,7 +105,7 @@ window.onload = function () {
     var m_point; // Previous Mouse Position
     var moving = false; // Right Mouse Hold Boolean
     $("#selector_can").mousemove(function (e) {
-        if (state == states.SELECT) {
+        if (state == states.SELECT || state == states.CROP) {
             point_2 = get_mouse_pos(e, can_rect);
         } else if (moving) {
             var c_point = get_mouse_pos(e, can_rect);
@@ -149,7 +144,7 @@ window.onload = function () {
     // Left click (Select)
     var s_points;
     $("#selector_can").click(function (e) {
-        if (state == states.NONE) {
+        if (state == states.NONE || state == state.CROP) {
             point_1 = get_mouse_pos(e, can_rect);
             point_2 = point_1;
 
@@ -172,7 +167,7 @@ window.onload = function () {
         console.log(selections);
 
         cur_img_id++;
-        if (cur_img_id >= image_list.length) {
+        if (cur_img_id >= imgs_list.length) {
             console.log("THE END");
             return;
         }
@@ -182,8 +177,8 @@ window.onload = function () {
         $("#selection-dialog").show();
         $("#selection-prompt").hide();
 
-        $(".num-field").text(image_list[cur_img_id].num);
-        img.src = image_list[cur_img_id].src; // Page Image
+        $(".num-field").text(imgs_list[cur_img_id].num[0]+"."+imgs_list[cur_img_id].num[1]+"."+imgs_list[cur_img_id].num[2]);
+        img.src = p_fix+imgs_list[cur_img_id].img; // Page Image
 
         // New Image Load Event
         img.onload = function () {
