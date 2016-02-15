@@ -7,7 +7,7 @@ var imgs_list = []; // Randomized Images List
 
 var max_uin = 1; // Maximum Subject
 var max_maj = 2; // Maximum Variant
-var max_min = 13; // 37; // Maximum Task
+var max_min = 37; // Maximum Task
 
 var blurRadius = 1.0;
 var blur_active = false;
@@ -82,9 +82,6 @@ function array_equal(a1,a2) {
     return true;
 }
 
-
-
-
 window.onload = function () {
     get_items();
 
@@ -107,8 +104,13 @@ window.onload = function () {
             var rc = new RenderCanvas();
             rc.render(selections);
 
+            // Save Images
             for (var i=0; i<rc.cnvs.length; i++) {
-                console.log(rc.cnvs[i].toDataURL());
+                var dat = (rc.cnvs[i].toDataURL());
+                dat = dat.replace(/^data:image\/\w+;base64,/, "");
+
+                var buf = new Buffer(dat, 'base64');
+                fs.writeFileSync('image_'+i+'.png', buf);
             }
         }
     }
