@@ -7,7 +7,7 @@ var imgs_list = []; // Randomized Images List
 
 var max_uin = 1; // Maximum Subject
 var max_maj = 2; // Maximum Variant
-var max_min = 37; // Maximum Task
+var max_min = 13; // 37; // Maximum Task
 
 var blurRadius = 1.0;
 var blur_active = false;
@@ -20,16 +20,18 @@ function get_random(min, max) {
 // Returns An Array Of Random Tasks
 function get_items () {
     task_list = JSON.parse(fs.readFileSync("Electron/img/pack1/db.json"));
+    console.log(task_list);
 
     var rnd_tsk = [];
     for (var i=1; i<=max_min; i++) {
         var uin = get_random(1,max_uin);
         var maj = get_random(1,max_maj);
 
-        var im = ($.grep(task_list, function (e) {
-            return (e.num[0] == uin && e.num[1] == maj && e.num[2] == i);
-        }));
+        // var im = ($.grep(task_list, function (e) {
+        //     return (e.num[0] == uin && e.num[1] == maj && e.num[2] == i);
+        // }));
 
+        var im = find_byNum(task_list, [uin,maj,i]);
         for (var a in im) {
             imgs_list.push(im[a]);
         }
@@ -66,13 +68,14 @@ function save_points() {
 
 }
 
-function find_byTask(array, key, value) {
+function find_byNum(array, value) {
+    var ids = [];
     for (var a=0; a<array.length; a++) {
-        if (array_equal(array[a][key], value)) {
-            return a;
+        if (array_equal(array[a].num, value)) {
+            ids.push(a);
         }
     }
-    return null;
+    return ids;
 }
 function array_equal(a1,a2) {
     for (var p=0; p<a1.length; p++) {
@@ -121,21 +124,6 @@ window.onload = function () {
 
     var tex; // Main Page
     var img = new Image(); // Page Image
-
-    // $(".num-field").text(imgs_list[cur_img_id].num[0]+"."+imgs_list[cur_img_id].num[1]+"."+imgs_list[cur_img_id].num[2]);
-    // img.src = image_list[cur_img_id].src; // Page Image
-    // img.src = p_fix+imgs_list[cur_img_id].img; // Page Image
-    // img.onload = function () {
-        // Sets Image Scale
-        // var s = can.height/img.height;
-        // tex = new Page(this, 0,0, s);
-
-        // blur_active = true;
-
-        // Main Render Loop Entry Point
-        // render_loop();
-
-    // }
 
     next_image();
 
@@ -222,7 +210,12 @@ window.onload = function () {
 
         if (cur_img_id >= imgs_list.length) {
             console.log("THE END");
+
+            // Save Selections
             fs.writeFileSync("Electron/img/pack1/task.json", JSON.stringify(selections));
+
+            // Save DB
+            fs.writeFileSync("Electron/img/pack1/db.json", JSON.stringify(task_list));
 
             return;
         }
@@ -232,12 +225,25 @@ window.onload = function () {
         $("#selection-dialog").show();
         $("#selection-prompt").hide();
 
-        $(".num-field").text(imgs_list[cur_img_id].num[0]+"."+imgs_list[cur_img_id].num[1]+"."+imgs_list[cur_img_id].num[2]);
-        img.src = p_fix+imgs_list[cur_img_id].img; // Page Image
+        var img_id = imgs_list[cur_img_id];
+
+        // Check If Points Are Saved
+        if (task_list[img_id].point !== undefined) {
+            selections.push({
+                point: task_list[img_id].point,
+                image: task_list[img_id].img
+            });
+            
+            next_image();
+            return;
+        }
+
+        $(".num-field").text(task_list[img_id].num[0]+"."+task_list[img_id].num[1]+"."+task_list[img_id].num[2]);
+        img.src = p_fix+task_list[img_id].img[0]; // Page Image
 
         // New Image Load Event
         img.onload = function () {
-            if (cur_img_id === 0) {
+            if (tex === undefined) {
                 tex = new Page(img, 0,0, can.height/img.height);
                 render_loop();
             } else {
@@ -248,36 +254,16 @@ window.onload = function () {
 
     // OK Button click
     $("#btn-yes").on("click", function () {
+        var img_id = imgs_list[cur_img_id];
         selections.push({
             point: s_points,
-            image: imgs_list[cur_img_id].img
+            image: task_list[img_id].img
         });
 
-        var ti = find_byTask(task_list, "num", imgs_list[cur_img_id].num);
-        task_list[ti].point = s_points;
+        // var ti = find_byTask(task_list, "num", imgs_list[cur_img_id].num);
+        task_list[img_id].point = s_points;
 
         next_image();
-
-        // // Next Image
-        // cur_img_id++;
-        // if (cur_img_id >= imgs_list.length) {
-        //     console.log("THE END");
-        //     fs.writeFileSync("Electron/img/pack1/task.json", JSON.stringify(selections));
-        //     return;
-        // }
-        //
-        // // Reset Style And Menus
-        // state = 0;
-        // $("#selection-dialog").show();
-        // $("#selection-prompt").hide();
-        //
-        // $(".num-field").text(imgs_list[cur_img_id].num[0]+"."+imgs_list[cur_img_id].num[1]+"."+imgs_list[cur_img_id].num[2]);
-        // img.src = p_fix+imgs_list[cur_img_id].img; // Page Image
-        //
-        // // New Image Load Event
-        // img.onload = function () {
-        //     tex.reset(can.height/img.height);
-        // }
     });
 
     // NO Button click
