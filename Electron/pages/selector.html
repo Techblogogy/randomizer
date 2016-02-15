@@ -19,12 +19,19 @@
 
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+
+        <!-- Blue Library -->
+        <script src="../js/StackBlur.js"></script>
+        <script src="../js/can_render.js"></script>
+
     </head>
 
     <body>
 
         <div class="main-area">
-            <div id="selector"></div>
+            <div id="selector">
+                <h2 style="display: none;" id="gen_txt">GENERATING IMAGE ...</h2>
+            </div>
             <div id="controls">
                 <!-- Title Area -->
                 <div class="dialog">
@@ -59,6 +66,8 @@
                 </div>
             </div>
         </div>
+
+        <div style="display: none;" id="rnd_imgs"></div>
 
 
         <!-- Canvas Image Selector -->

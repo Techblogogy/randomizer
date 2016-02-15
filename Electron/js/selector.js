@@ -27,10 +27,6 @@ function get_items () {
         var uin = get_random(1,max_uin);
         var maj = get_random(1,max_maj);
 
-        // var im = ($.grep(task_list, function (e) {
-        //     return (e.num[0] == uin && e.num[1] == maj && e.num[2] == i);
-        // }));
-
         var im = find_byNum(task_list, [uin,maj,i]);
         for (var a in im) {
             imgs_list.push(im[a]);
@@ -86,10 +82,36 @@ function array_equal(a1,a2) {
     return true;
 }
 
+
+
+
 window.onload = function () {
     get_items();
 
     gen_PDF();
+
+    var dm_id = -1;
+    function image_DOM () {
+        dm_id++;
+
+        if (dm_id < selections.length) {
+            var idg = new Image();
+            idg.id = "i_"+dm_id;
+            idg.src = p_fix+selections[dm_id].image;
+            idg.onload = function () {
+                document.getElementById("rnd_imgs").appendChild(this);
+                image_DOM();
+            }
+
+        } else {
+            var rc = new RenderCanvas();
+            rc.render(selections);
+
+            for (var i=0; i<rc.cnvs.length; i++) {
+                console.log(rc.cnvs[i].toDataURL());
+            }
+        }
+    }
 
     var can_holder = $("#selector"); // Canvas DIV
 
@@ -109,16 +131,6 @@ window.onload = function () {
         can.height = $("#selector").innerHeight();
     });
 
-    // var image_list = [
-    //     {
-    //         num: "1.2.1",
-    //         src: "../img/12.png"
-    //     },
-    //     {
-    //         num: "3.2.1",
-    //         src: "../img/24.png"
-    //     }
-    // ];
     var selections = [];
     var cur_img_id = -1;
 
@@ -211,11 +223,24 @@ window.onload = function () {
         if (cur_img_id >= imgs_list.length) {
             console.log("THE END");
 
-            // Save Selections
+            $("#gen_txt").show();
+            $(can).hide();
+
+            // TEMP: Save Selections
             fs.writeFileSync("Electron/img/pack1/task.json", JSON.stringify(selections));
 
             // Save DB
             fs.writeFileSync("Electron/img/pack1/db.json", JSON.stringify(task_list));
+
+            // Render Image Into DOM
+            // for (var n=0; n<selections.length; n++) {
+            //
+            // }
+
+            image_DOM();
+
+            // Render Canvas
+            // var rc = new RenderCanvas();
 
             return;
         }
@@ -233,7 +258,7 @@ window.onload = function () {
                 point: task_list[img_id].point,
                 image: task_list[img_id].img
             });
-            
+
             next_image();
             return;
         }
