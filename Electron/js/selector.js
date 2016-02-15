@@ -1,6 +1,6 @@
 var fs = window.nodeRequire("fs");
 
-var p_fix = "../img/pack1/pages/"
+var p_fix = "../img/pack1/pages/";
 
 var task_list = []; // All Available Tasks
 var imgs_list = []; // Randomized Images List
@@ -36,34 +36,6 @@ function get_items () {
     console.log(imgs_list);
 }
 
-// TEMPORARY
-var points;
-// Generates A PDF
-function gen_PDF() {
-    // Get HEADER and FOOTER
-    var head = fs.readFileSync("Electron/templates/head.html");
-    var foot = fs.readFileSync("Electron/templates/footer.html");
-
-    // TEMPORARY. Load data file
-    points = (fs.readFileSync("Electron/img/pack1/task.json"));
-
-    // TODO: Generate Image List
-    var body = "<script>var images = '"+points+"'</script>";
-    points = JSON.parse(points);
-    for (var p in points) {
-        body += "<img src=\"Electron/img/pack1/pages/"+points[p].image+"\" id=\"i_"+p+"\" style=\"display:none; \">";
-    }
-
-    // Save Page
-    fs.writeFileSync("tmp.html", head+body+foot);
-
-    // TODO: Render PDF
-}
-
-function save_points() {
-
-}
-
 function find_byNum(array, value) {
     var ids = [];
     for (var a=0; a<array.length; a++) {
@@ -85,7 +57,7 @@ function array_equal(a1,a2) {
 window.onload = function () {
     get_items();
 
-    gen_PDF();
+    // gen_PDF();
 
     var dm_id = -1;
     function image_DOM () {
@@ -229,7 +201,7 @@ window.onload = function () {
             $(can).hide();
 
             // TEMP: Save Selections
-            fs.writeFileSync("Electron/img/pack1/task.json", JSON.stringify(selections));
+            // fs.writeFileSync("Electron/img/pack1/task.json", JSON.stringify(selections));
 
             // Save DB
             fs.writeFileSync("Electron/img/pack1/db.json", JSON.stringify(task_list));
