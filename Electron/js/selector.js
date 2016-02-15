@@ -9,6 +9,9 @@ var max_uin = 1; // Maximum Subject
 var max_maj = 2; // Maximum Variant
 var max_min = 37; // Maximum Task
 
+var blurRadius = 1.0;
+var blur_active = false;
+
 // Returns random in [min, max] (edges included)
 function get_random(min, max) {
     return Math.floor(Math.random() * (max+1 - min)) + min;
@@ -35,6 +38,8 @@ function get_items () {
     console.log(imgs_list);
 }
 
+// TEMPORARY
+var points;
 // Generates A PDF
 function gen_PDF() {
     // Get HEADER and FOOTER
@@ -42,7 +47,7 @@ function gen_PDF() {
     var foot = fs.readFileSync("Electron/templates/footer.html");
 
     // TEMPORARY. Load data file
-    var points = (fs.readFileSync("Electron/img/pack1/task.json"));
+    points = (fs.readFileSync("Electron/img/pack1/task.json"));
 
     // TODO: Generate Image List
     var body = "<script>var images = '"+points+"'</script>";
@@ -54,25 +59,28 @@ function gen_PDF() {
     // Save Page
     fs.writeFileSync("tmp.html", head+body+foot);
 
-    // Render PDF
-    // var phan = window.nodeRequire('phantom');
-    // var page = phan.create()
-    // .then(function (ph) {
-    //     ph.createPage().then(function (page) {
-    //         page.property('paperSize', {format: "A4", orientation: "landscape", border: "5mm"}).then(function () {
-    //             page.property('viewportSize', {height: 595, width: 840}).then(function () {
-    //                 page.open('tmp.html').then(function () {
-    //                     page.render('file.pdf');
-    //
-    //                     // Clean Up
-    //                     // fs.unlinkSync(".tmp.html");
-    //                     page.close();
-    //                     ph.exit();
-    //                 });
-    //             })
-    //         });
-    //     });
-    // });
+    // TODO: Render PDF
+}
+
+function save_points() {
+
+}
+
+function find_byTask(array, key, value) {
+    for (var a=0; a<array.length; a++) {
+        if (array_equal(array[a][key], value)) {
+            return a;
+        }
+    }
+    return null;
+}
+function array_equal(a1,a2) {
+    for (var p=0; p<a1.length; p++) {
+        if (a1[p] !== a2[p]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 window.onload = function () {
@@ -109,22 +117,27 @@ window.onload = function () {
     //     }
     // ];
     var selections = [];
-    var cur_img_id = 0;
+    var cur_img_id = -1;
 
     var tex; // Main Page
     var img = new Image(); // Page Image
 
-    $(".num-field").text(imgs_list[cur_img_id].num[0]+"."+imgs_list[cur_img_id].num[1]+"."+imgs_list[cur_img_id].num[2]);
+    // $(".num-field").text(imgs_list[cur_img_id].num[0]+"."+imgs_list[cur_img_id].num[1]+"."+imgs_list[cur_img_id].num[2]);
     // img.src = image_list[cur_img_id].src; // Page Image
-    img.src = p_fix+imgs_list[cur_img_id].img; // Page Image
-    img.onload = function () {
+    // img.src = p_fix+imgs_list[cur_img_id].img; // Page Image
+    // img.onload = function () {
         // Sets Image Scale
-        var s = can.height/img.height;
-        tex = new Page(this, 0,0, s);
+        // var s = can.height/img.height;
+        // tex = new Page(this, 0,0, s);
+
+        // blur_active = true;
 
         // Main Render Loop Entry Point
-        render_loop();
-    }
+        // render_loop();
+
+    // }
+
+    next_image();
 
     // Selection States ENUM
     var states = {
@@ -203,18 +216,14 @@ window.onload = function () {
         }
     });
 
-    // OK Button click
-    $("#btn-yes").on("click", function () {
-        selections.push({
-            point: s_points,
-            image: imgs_list[cur_img_id].img
-        });
-        console.log(selections);
-
+    function next_image() {
+        // if (cur_img_id !== 0) cur_img_id++;
         cur_img_id++;
+
         if (cur_img_id >= imgs_list.length) {
             console.log("THE END");
             fs.writeFileSync("Electron/img/pack1/task.json", JSON.stringify(selections));
+
             return;
         }
 
@@ -228,8 +237,47 @@ window.onload = function () {
 
         // New Image Load Event
         img.onload = function () {
-            tex.reset(can.height/img.height);
+            if (cur_img_id === 0) {
+                tex = new Page(img, 0,0, can.height/img.height);
+                render_loop();
+            } else {
+                tex.reset(can.height/img.height);
+            }
         }
+    }
+
+    // OK Button click
+    $("#btn-yes").on("click", function () {
+        selections.push({
+            point: s_points,
+            image: imgs_list[cur_img_id].img
+        });
+
+        var ti = find_byTask(task_list, "num", imgs_list[cur_img_id].num);
+        task_list[ti].point = s_points;
+
+        next_image();
+
+        // // Next Image
+        // cur_img_id++;
+        // if (cur_img_id >= imgs_list.length) {
+        //     console.log("THE END");
+        //     fs.writeFileSync("Electron/img/pack1/task.json", JSON.stringify(selections));
+        //     return;
+        // }
+        //
+        // // Reset Style And Menus
+        // state = 0;
+        // $("#selection-dialog").show();
+        // $("#selection-prompt").hide();
+        //
+        // $(".num-field").text(imgs_list[cur_img_id].num[0]+"."+imgs_list[cur_img_id].num[1]+"."+imgs_list[cur_img_id].num[2]);
+        // img.src = p_fix+imgs_list[cur_img_id].img; // Page Image
+        //
+        // // New Image Load Event
+        // img.onload = function () {
+        //     tex.reset(can.height/img.height);
+        // }
     });
 
     // NO Button click
@@ -271,11 +319,18 @@ window.onload = function () {
         ctx.fillStyle = "#ebebeb";
         ctx.fill();
 
+
+
         if (state !== states.VIEW) {
             tex.render(ctx);
         } else {
             tex.p_render(ctx, s_points[0], s_points[1]);
         }
+
+        // if (blur_active) {
+            // stackBlurCanvasRGBA( ctx, 0, 0, can.width, can.height, blurRadius);
+            // blur_active = false;
+        // }
 
         // Draw Select Rectangle
         if (state == states.SELECT) {
