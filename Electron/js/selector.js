@@ -1,4 +1,5 @@
 var fs = window.nodeRequire("fs");
+var pdf = window.nodeRequire("pdfkit");
 
 var p_fix = "../img/pack1/pages/";
 
@@ -7,10 +8,13 @@ var imgs_list = []; // Randomized Images List
 
 var max_uin = 1; // Maximum Subject
 var max_maj = 2; // Maximum Variant
-var max_min = 37; // Maximum Task
+var max_min = 13; // 37; // Maximum Task
 
 var blurRadius = 1.0;
 var blur_active = false;
+
+var remote = window.nodeRequire("remote");
+var dialog = remote.require("dialog");
 
 // Returns random in [min, max] (edges included)
 function get_random(min, max) {
@@ -84,6 +88,38 @@ window.onload = function () {
                 var buf = new Buffer(dat, 'base64');
                 fs.writeFileSync('image_'+i+'.png', buf);
             }
+
+            // Save File Dialog
+            // dialog.showSaveDialog({filters: [
+                // {name: "text", extensions: ['png']}
+            // ]}, function (fname) {
+            //     if (fname === undefined) return;
+            //
+            //     // console.log(fname.split("/"));
+            //
+            //     console.log("Saving...");
+            //     // Save Images
+            //     // for (var i=0; i<rc.cnvs.length; i++) {
+            //     //     var dat = (rc.cnvs[i].toDataURL());
+            //     //     dat = dat.replace(/^data:image\/\w+;base64,/, "");
+            //     //
+            //     //     var buf = new Buffer(dat, 'base64');
+            //     //     fs.writeFileSync('image_'+i+'.png', buf);
+            //     // }
+            //     console.log("Saved");
+            // });
+
+            // Save PDF
+            doc = new pdf({size: "A4", layout: "landscape"});
+            doc.pipe(fs.createWriteStream('test.pdf'));
+
+            for (var i=0; i<rc.cnvs.length; i++) {
+                doc.image("image_"+i+".png", 0, 0, {width: 842});
+                if (i !== rc.cnvs.length-1) doc.addPage();
+            }
+
+
+            doc.end();
         }
     }
 
