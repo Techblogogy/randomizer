@@ -8,7 +8,7 @@ var imgs_list = []; // Randomized Images List
 
 var max_uin = 1; // Maximum Subject
 var max_maj = 2; // Maximum Variant
-var max_min = 13; // 37; // Maximum Task
+var max_min = 37; // 37; // Maximum Task
 
 var blurRadius = 1.0;
 var blur_active = false;
@@ -86,40 +86,36 @@ window.onload = function () {
                 dat = dat.replace(/^data:image\/\w+;base64,/, "");
 
                 var buf = new Buffer(dat, 'base64');
-                fs.writeFileSync('image_'+i+'.png', buf);
+                fs.writeFileSync('.image_'+i+'.png', buf);
             }
 
             // Save File Dialog
-            // dialog.showSaveDialog({filters: [
-                // {name: "text", extensions: ['png']}
-            // ]}, function (fname) {
-            //     if (fname === undefined) return;
-            //
-            //     // console.log(fname.split("/"));
-            //
-            //     console.log("Saving...");
-            //     // Save Images
-            //     // for (var i=0; i<rc.cnvs.length; i++) {
-            //     //     var dat = (rc.cnvs[i].toDataURL());
-            //     //     dat = dat.replace(/^data:image\/\w+;base64,/, "");
-            //     //
-            //     //     var buf = new Buffer(dat, 'base64');
-            //     //     fs.writeFileSync('image_'+i+'.png', buf);
-            //     // }
-            //     console.log("Saved");
-            // });
+            dialog.showSaveDialog({filters: [
+                {name: "text", extensions: ['pdf']}
+            ]}, function (fname) {
+                if (fname !== undefined) {
+                    console.log("Saving...");
 
-            // Save PDF
-            doc = new pdf({size: "A4", layout: "landscape"});
-            doc.pipe(fs.createWriteStream('test.pdf'));
+                    // Save PDF
+                    doc = new pdf({size: "A4", layout: "landscape"});
+                    doc.pipe(fs.createWriteStream(fname));
 
-            for (var i=0; i<rc.cnvs.length; i++) {
-                doc.image("image_"+i+".png", 0, 0, {width: 842});
-                if (i !== rc.cnvs.length-1) doc.addPage();
-            }
+                    for (var i=0; i<rc.cnvs.length; i++) {
+                        doc.image(".image_"+i+".png", 0, 0, {width: 842});
+                        if (i !== rc.cnvs.length-1) doc.addPage();
+                    }
 
+                    doc.end();
 
-            doc.end();
+                    console.log("Saved");
+                }
+
+                // Remove Images
+                for (var i=0; i<rc.cnvs.length; i++) {
+                    fs.unlinkSync('.image_'+i+'.png');
+                }
+
+            });
         }
     }
 
