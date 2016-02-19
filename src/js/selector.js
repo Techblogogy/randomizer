@@ -6,7 +6,7 @@ var p_fix = "../img/pack1/pages/";
 var task_list = []; // All Available Tasks
 var imgs_list = []; // Randomized Images List
 
-var max_uin = 1; // Maximum Subject
+var max_uin = 10; // Maximum Subject
 var max_maj = 2; // Maximum Variant
 var max_min = 37; // 37; // Maximum Task
 
@@ -27,7 +27,7 @@ function get_items () {
     console.log(task_list);
 
     var rnd_tsk = [];
-    for (var i=1; i<=max_min; i++) {
+    for (var i=1; i<=max_min; i+=2) {
         var uin = get_random(1,max_uin);
         var maj = get_random(1,max_maj);
 
@@ -262,7 +262,7 @@ window.onload = function () {
         if (task_list[img_id].point !== undefined) {
             selections.push({
                 point: task_list[img_id].point,
-                image: task_list[img_id].img
+                image: task_list[img_id].image
             });
 
             next_image();
@@ -270,7 +270,8 @@ window.onload = function () {
         }
 
         $(".num-field").text(task_list[img_id].num[0]+"."+task_list[img_id].num[1]+"."+task_list[img_id].num[2]);
-        img.src = p_fix+task_list[img_id].img[0]; // Page Image
+        console.log(task_list[img_id]);
+        img.src = p_fix+task_list[img_id].image; // Page Image
 
         // New Image Load Event
         img.onload = function () {
@@ -288,7 +289,7 @@ window.onload = function () {
         var img_id = imgs_list[cur_img_id];
         selections.push({
             point: s_points,
-            image: task_list[img_id].img
+            image: task_list[img_id].image
         });
 
         // var ti = find_byTask(task_list, "num", imgs_list[cur_img_id].num);

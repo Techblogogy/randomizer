@@ -15,6 +15,7 @@ window.onload = function () {
     img_list = img_list.sort(function (a,b) {
         return parseInt(a.slice(0,-4))-parseInt(b.slice(0,-4));
     });
+    console.log(img_list);
     $("#task_img").attr("src", path_prefix+img_list[cur_img_id]);
 
     $("#itm-smb").on('click', function () {
