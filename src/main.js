@@ -11,6 +11,12 @@ app.on("window-all-closed", function () {
 });
 
 app.on("ready", function () {
+
+    // Set App Path To Global
+    global.paths = {
+        app_path: app.getAppPath()
+    };
+
     mainWindow = new BrowserWindow();
     // mainWindow.loadURL("file://"+__dirname+"/index.html");
     mainWindow.loadURL("file://"+__dirname+"/pages/selector.html"); // Selector Page
