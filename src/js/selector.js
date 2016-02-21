@@ -4,55 +4,64 @@ var pdf = window.nodeRequire("pdfkit");
 var remote = window.nodeRequire("remote");
 var dialog = remote.require("dialog");
 
-// var p_fix = "res/img/pack1/pages/";
-var g_path = remote.getGlobal("paths").app_path;
-var p_fix = g_path+"/res/img/pack1/pages/";
-
-var task_list = []; // All Available Tasks
-var imgs_list = []; // Randomized Images List
-
-var max_uin = 10; // Maximum Subject
-var max_maj = 2; // Maximum Variant
-var max_min = 37; // 37; // Maximum Task
 
 var blurRadius = 1.0;
 var blur_active = false;
 
+/* Selector Class */
+
+// Selector Constructor
+var Selector = function () {
+    this.g_path = remote.getGlobal("paths").app_path; // Global App Path
+    this.p_fix = this.g_path+"/res/img/pack1/pages/"; // Image Prefix
+
+    this.task_list = []; // All Available Tasks
+    this.imgs_list = []; // Randomized Images List
+
+    this.max_uin = 10; // Maximum Subject
+    this.max_maj = 2; // Maximum Variant
+    this.max_min = 37; // 37; // Maximum Task
+}
 
 // Returns random in [min, max] (edges included)
-function get_random(min, max) {
+Selector.prototype.get_random = function(min,max) {
     return Math.floor(Math.random() * (max+1 - min)) + min;
 }
 
-// Returns An Array Of Random Tasks
-function get_items () {
-    task_list = JSON.parse(fs.readFileSync(g_path+"/res/img/pack1/db.json"));
-    console.log(task_list);
+// Generates Random Items Based On: max_uin, max_maj, max_min
+Selector.prototype.get_items = function() {
 
-    var rnd_tsk = [];
-    for (var i=1; i<=max_min; i+=2) {
-        var uin = get_random(1,max_uin);
-        var maj = get_random(1,max_maj);
+    // Load Package DB File
+    this.task_list = JSON.parse(fs.readFileSync(this.g_path+"/res/img/pack1/db.json"));
+    // console.log(this.task_list); // DEBUG: Display Task List
 
-        var im = find_byNum(task_list, [uin,maj,i]);
+    // var rnd_tsk = [];
+    for (var i=1; i<=this.max_min; i+=6) {
+        var uin = this.get_random(1,this.max_uin);
+        var maj = this.get_random(1,this.max_maj);
+
+        var im = this.find_byNum(this.task_list, [uin,maj,i]);
         for (var a in im) {
-            imgs_list.push(im[a]);
+            this.imgs_list.push(im[a]);
         }
     }
 
-    console.log(imgs_list);
+    // console.log(this.imgs_list); // DEBUG: Display Image List
 }
 
-function find_byNum(array, value) {
+// Finds Task Number In Array
+Selector.prototype.find_byNum = function(array, value) {
     var ids = [];
     for (var a=0; a<array.length; a++) {
-        if (array_equal(array[a].num, value)) {
+        if (this.array_equal(array[a].num, value)) {
             ids.push(a);
         }
     }
     return ids;
 }
-function array_equal(a1,a2) {
+
+// Compares Arrays
+Selector.prototype.array_equal = function(a1,a2) {
     for (var p=0; p<a1.length; p++) {
         if (a1[p] !== a2[p]) {
             return false;
@@ -62,7 +71,8 @@ function array_equal(a1,a2) {
 }
 
 window.onload = function () {
-    get_items();
+    var i_sel = new Selector();
+    i_sel.get_items();
 
     // gen_PDF();
 
@@ -73,7 +83,7 @@ window.onload = function () {
         if (dm_id < selections.length) {
             var idg = new Image();
             idg.id = "i_"+dm_id;
-            idg.src = p_fix+selections[dm_id].image;
+            idg.src = i_sel.p_fix+selections[dm_id].image;
             idg.onload = function () {
                 document.getElementById("rnd_imgs").appendChild(this);
                 image_DOM();
@@ -229,7 +239,7 @@ window.onload = function () {
         // if (cur_img_id !== 0) cur_img_id++;
         cur_img_id++;
 
-        if (cur_img_id >= imgs_list.length) {
+        if (cur_img_id >= i_sel.imgs_list.length) {
             console.log("THE END");
 
             $("#gen_txt").show();
@@ -239,7 +249,7 @@ window.onload = function () {
             // fs.writeFileSync("Electron/img/pack1/task.json", JSON.stringify(selections));
 
             // Save DB
-            fs.writeFileSync(g_path+"/res/img/pack1/db.json", JSON.stringify(task_list));
+            fs.writeFileSync(i_sel.g_path+"/res/img/pack1/db.json", JSON.stringify(i_sel.task_list));
 
             // Render Image Into DOM
             // for (var n=0; n<selections.length; n++) {
@@ -259,22 +269,22 @@ window.onload = function () {
         $("#selection-dialog").show();
         $("#selection-prompt").hide();
 
-        var img_id = imgs_list[cur_img_id];
+        var img_id = i_sel.imgs_list[cur_img_id];
 
         // Check If Points Are Saved
-        if (task_list[img_id].point !== undefined) {
+        if (i_sel.task_list[img_id].point !== undefined) {
             selections.push({
-                point: task_list[img_id].point,
-                image: task_list[img_id].image
+                point: i_sel.task_list[img_id].point,
+                image: i_sel.task_list[img_id].image
             });
 
             next_image();
             return;
         }
 
-        $(".num-field").text(task_list[img_id].num[0]+"."+task_list[img_id].num[1]+"."+task_list[img_id].num[2]);
-        console.log(task_list[img_id]);
-        img.src = p_fix+task_list[img_id].image; // Page Image
+        $(".num-field").text(i_sel.task_list[img_id].num[0]+"."+i_sel.task_list[img_id].num[1]+"."+i_sel.task_list[img_id].num[2]);
+        console.log(i_sel.task_list[img_id]);
+        img.src = i_sel.p_fix+i_sel.task_list[img_id].image; // Page Image
 
         // New Image Load Event
         img.onload = function () {
@@ -289,14 +299,14 @@ window.onload = function () {
 
     // OK Button click
     $("#btn-yes").on("click", function () {
-        var img_id = imgs_list[cur_img_id];
+        var img_id = i_sel.imgs_list[cur_img_id];
         selections.push({
             point: s_points,
-            image: task_list[img_id].image
+            image: i_sel.task_list[img_id].image
         });
 
-        // var ti = find_byTask(task_list, "num", imgs_list[cur_img_id].num);
-        task_list[img_id].point = s_points;
+        // var ti = find_byTask(i_sel.task_list, "num", i_sel.imgs_list[cur_img_id].num);
+        i_sel.task_list[img_id].point = s_points;
 
         next_image();
     });
