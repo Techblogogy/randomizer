@@ -5,7 +5,8 @@ var remote = window.nodeRequire("remote");
 var dialog = remote.require("dialog");
 
 // var p_fix = "res/img/pack1/pages/";
-var p_fix = remote.getGlobal("paths").app_path+"/../res/img/pack1/pages/";
+var g_path = remote.getGlobal("paths").app_path;
+var p_fix = g_path+"/res/img/pack1/pages/";
 
 var task_list = []; // All Available Tasks
 var imgs_list = []; // Randomized Images List
@@ -25,7 +26,7 @@ function get_random(min, max) {
 
 // Returns An Array Of Random Tasks
 function get_items () {
-    task_list = JSON.parse(fs.readFileSync("res/img/pack1/db.json"));
+    task_list = JSON.parse(fs.readFileSync(g_path+"/res/img/pack1/db.json"));
     console.log(task_list);
 
     var rnd_tsk = [];
@@ -238,7 +239,7 @@ window.onload = function () {
             // fs.writeFileSync("Electron/img/pack1/task.json", JSON.stringify(selections));
 
             // Save DB
-            fs.writeFileSync("res/img/pack1/db.json", JSON.stringify(task_list));
+            fs.writeFileSync(g_path+"/res/img/pack1/db.json", JSON.stringify(task_list));
 
             // Render Image Into DOM
             // for (var n=0; n<selections.length; n++) {

@@ -16,6 +16,7 @@ app.on("ready", function () {
     global.paths = {
         app_path: app.getAppPath()
     };
+    console.log(global.paths.app_path);
 
     mainWindow = new BrowserWindow();
     // mainWindow.loadURL("file://"+__dirname+"/index.html");

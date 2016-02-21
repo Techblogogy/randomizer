@@ -1,0 +1,8 @@
+{
+    "name": "randomizer",
+    "version": "0.1.0",
+    "devDependencies": {
+        "pdfkit": "^0.7.1"
+    },
+    "main": "./src/main.js"
+}
